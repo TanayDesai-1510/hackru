@@ -42,7 +42,7 @@ import pandas as pd
 
 # Assuming the extract_course_data function is already defined
 
-list_of_urls = {
+megaurldict = {
     ("Africana Studies", "013"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20311.html",
     ("Africana Studies", "014"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20312.html",
     ("American Studies", "050"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20323.html",
@@ -51,6 +51,30 @@ list_of_urls = {
     ("Asian Studies", "098"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20350.html",
     ("Astrophysics", "105"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20355.html",
     ("Catalan", "145"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20357.html",
+    ("Chinese", "165"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20365.html",
+    ("Chinese", "165"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20370.html",
+    ("Classical Humanities", "190"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20379.html",
+    ("Classics in Ancient Greek", "490"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20381.html",
+    ("Classic in Latin", "580"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20382.html",
+    ("Criminal Justice", "202"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20403.html",
+    ("Dance", "203"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20408.html",
+    ("Dance", "206"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20409.html",
+    ("East Asia Language and Area Studies", "214"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20414.html",
+    ("Education", "300"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20424.html",
+    ("English", "350"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20432.html",
+    ("English", "353"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20433.html",
+    ("English", "354"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20434.html",
+    ("English", "355"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20435.html",
+    ("European Studies", "360"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20445.html",
+    ("Excerise Science and Sport Studies", "377"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20450.html",
+    ("French", "420"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20463.html",
+    ("French", "420"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20464.html",
+    ("Geography", "450"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20472.html",
+    ("Geological Sciences", "460"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20473.html",
+    ("German", "470"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20488.html",
+    ("German", "470"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20489.html",
+    ("Modern Greek Studies", "489"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg22963.html",
+    ("Modern Greek Studies", "489"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg22960.html",    
     ("Cognitive Science", "185"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20385.html",
     ("Computer Science", "198"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20398.html",
     ("Economics", "220"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg22953.html",
@@ -59,6 +83,11 @@ list_of_urls = {
     ("Statistics", "960"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20744.html",
     ("Women's and Gender Studies", "988"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20763.html",
     ("Cinema Studies", "175"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20373.html",
+}
+
+miniurldict = {
+    ("Computer Science", "198"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20398.html",
+    ("Mathematics", "640"): "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20606.html"
 }
 
 def create_mega_dataframe(url_dict):
@@ -76,15 +105,17 @@ def create_mega_dataframe(url_dict):
     return mega_df
 
 # Now call the function to create the mega dataframe
-mega_df = create_mega_dataframe(list_of_urls)
-save_to_csv(mega_df, "backend/mega_courses.csv")
+mini_df = create_mega_dataframe(miniurldict)
+save_to_csv(mini_df, "backend/more/mini_courses.csv")
 
 
 if __name__ == "__main__":
-    url = "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20763.html"
-    df = extract_course_data(url)
-    save_to_csv(df, "backend/Women's and Gender Studies 988 Courses.csv")
+    # url = "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20763.html"
+    # df = extract_course_data(url)
+    # save_to_csv(df, "backend/more/Women's and Gender Studies 988 Courses.csv")
     
-    url2 = "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20398.html"
-    df2 = extract_course_data(url2)
-    save_to_csv(df2, "backend/Computer Science 198 Courses.csv")
+    # url2 = "https://catalogs.rutgers.edu/generated/nb-ug_0507/pg20398.html"
+    # df2 = extract_course_data(url2)
+    # save_to_csv(df2, "backend/more/Computer Science 198 Courses.csv")
+    
+    pass
