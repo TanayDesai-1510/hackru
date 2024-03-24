@@ -17,14 +17,28 @@ import { useMyContext } from "../Context";
 
 
 const Reccomender = () => {
-  const [profData, setProfData] = useState([]);
+  const [courseData, setProfData] = useState([]);
   const navigate = useNavigate();
   const {netId} = useParams();
+  const [profs, showProfs] = useState(false);
+  const [profData, sProfData] = useState([]);
+
+  const fetchProfs = async (courseId) => {
+    const response = await fetch(`http://127.0.0.1:5000/prof/${courseId}`);
+    if (response.ok) {
+        const data = await response.json();
+        const responseProfs = Object.values(data);
+        sProfData(responseProfs);
+        console.log(responseProfs);
+        showProfs(true);
+    }
+  }
 
   const {signIn} = useMyContext();
   if (!signIn) {
     navigate('/');
   }
+
   useEffect(() => {
     // if (!professorData) {
       (async () => {
@@ -41,15 +55,16 @@ const Reccomender = () => {
           console.error("Error fetching data:", error);
         }
     })();
+    
     // } else {
     // //   setProfData(professorData);
     // }
   }, [netId]);
 
   return (
-    <Box sx={{ marginTop: '4rem', display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%' }}>{profData.map((pd, index) => (
+    <Box sx={{ marginTop: '4rem', display: 'flex', flexDirection: 'column', gap: '1rem', width: '100%' }}>{courseData.map((pd, index) => (
         <Grid item key={index} sx={{width: '100%', flexGrow: '1'}}>
-          <ButtonBase component="div" sx={{width: '100%'}}>
+          <ButtonBase component="div" sx={{width: '100%'}} onClick={() => {fetchProfs(pd.id)}}>
             <Card sx={{width: '100%'}}>
               <CardContent>
                 <Typography variant="h5" component="h2">
@@ -69,6 +84,44 @@ const Reccomender = () => {
           </ButtonBase>
         </Grid>
       ))}
+      <Dialog
+        open={profs}
+        onClose={() => {showProfs(false)}}
+        fullWidth
+        maxWidth="sm"
+        // You can adjust the size by changing the `maxWidth` prop
+        // Possible values: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | false
+        // For responsive behavior, consider using 'sm' or 'md'
+      >
+        <DialogTitle>Recommended Professors</DialogTitle>
+        <DialogContent>
+        {profData.map((pd, index) => (
+        <Grid item key={index} sx={{width: '100%', flexGrow: '1'}}>
+            <Card sx={{width: '100%'}}>
+              <CardContent>
+                <Typography variant="h5" component="h2">
+                  {pd.class}
+                </Typography>
+                <Typography color="textSecondary">
+                  Name: {pd.name}
+                </Typography>
+                <Typography color="textSecondary">
+                  Rating2: {pd.rating1}
+                </Typography>
+                <Typography color="textSecondary">
+                  Rating1: {pd.rating2}
+                </Typography>
+              </CardContent>
+            </Card>
+        </Grid>
+      ))}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => {showProfs(false)}} color="primary">
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
       </Box>
   );
 };

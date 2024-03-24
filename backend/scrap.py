@@ -79,7 +79,7 @@ def get_prof_json_by_course(courses):
     wait.until(EC.element_to_be_clickable((By.ID, "trust-browser-button"))).click()
 
     # Select school and department
-    time.sleep(8)
+    time.sleep(5)
 
 
     professors = []
