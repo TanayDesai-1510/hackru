@@ -18,7 +18,6 @@ from more.hackru import (
 app = Flask(__name__)
 
 FINAL = pd.read_csv("C:\\Users\\tanay\\OneDrive\\Desktop\\hackru\\hackru\\backend\\more\\final_student_course_records.csv")
-KEY = "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"
 
 @app.route("/classtrial")
 def hello():
