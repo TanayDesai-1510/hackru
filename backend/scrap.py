@@ -101,7 +101,7 @@ if __name__ == "__main__":
     # Select school and department
     time.sleep(5)
 
-    courses= ["01:198:111", "01:198:112", "01:988:326"]
+    courses= ["01:198:111", "01:198:112", "01:198:205"]
 
     get_csv_by_course(courses)
 
