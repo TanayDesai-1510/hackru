@@ -179,6 +179,9 @@ save_to_csv(mini_df, "backend/more/mini_courses.csv")
 
 mega_df = create_mega_dataframe(megaurldict)
 mega_df = normalize_course_id(mega_df)
+print(mega_df[mega_df['Course ID'].apply(lambda x: len(str(x)) > 10)])
+print(len(mega_df[mega_df['Course ID'].apply(lambda x: len(str(x)) > 10)]))
+
 save_to_csv(mega_df, "backend/more/mega_courses.csv")
 
 
