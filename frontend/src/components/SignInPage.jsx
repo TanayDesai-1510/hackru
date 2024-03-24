@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Typography, TextField, Button, Paper } from '@mui/material';
 import { styled } from '@mui/material/styles';
+import {useNavigate} from "react-router-dom";
+import { useMyContext } from '../Context';
 
 const Container = styled('div')({
   display: 'flex',
@@ -28,24 +30,34 @@ const SignInPage = ({ onSignIn }) => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+
+  const {setIsSignIn} = useMyContext();
+
+  const handleSubmit = async(e) => {
     e.preventDefault();
     // Dummy authentication logic (netId validation)
-    if (netId.trim() === '') {
-      setError('Please enter your Net ID');
-      return;
+    const formData = {
+      netId, password
     }
-
-    // You can implement real authentication logic here
-    // For now, let's assume any non-empty Net ID is valid
-
-    // Call the callback function passed from the parent
-    onSignIn();
-
-    // Clear the form fields
-    setNetId('');
-    setPassword('');
-    setError('');
+    try {
+      const res = await fetch('http://127.0.0.1:5000/dashboard',{
+        method: 'POST',
+        headers: {
+        'Content-Type': 'application/login'
+        },
+        body: JSON.stringify(formData),
+      });
+      if (!res.ok) {
+        throw new Error('Error: $(res.status)')
+      }
+      const result = await res.json();
+      console.log('Success', result);
+    } catch (error) {
+      console.error('Error during form submission: ', error);
+    }
+    setIsSignIn(true);
+    navigate('/dashboard');
   };
 
   return (
@@ -74,7 +86,7 @@ const SignInPage = ({ onSignIn }) => {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
           />
-          <Button type="submit" variant="contained" sx={{ backgroundColor: '#cc0033', mt: 2 }}>
+          <Button type="submit" variant="contained" sx={{ backgroundColor: '#cc0033', mt: 2 }} onClick={handleSubmit}>
             Sign In
           </Button>
         </form>

@@ -97,10 +97,35 @@ function Form() {
   const [year, setYear] = useState('');
   const [gpa, setGpa] = useState('');
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log({ major, year, gpa });
-    // Submit your form data here
+
+    const formData = {
+      major,
+      year,
+      gpa
+    };
+
+    try {
+      const response = await fetch('http://127.0.0.1:5000/class', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error: ${response.status}');
+      }
+
+      const result = await response.json();
+      console.log('Success:', result);
+      // Handle success here (e.g., redirecting to another page or displaying a success message)
+    } catch (error) {
+      console.error('Error during form submission:', error);
+      // Handle errors here (e.g., displaying an error message)
+    }
   };
 
   return (

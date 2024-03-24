@@ -3,7 +3,7 @@ import { Typography, Button } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import { keyframes } from '@mui/styled-engine';
 import { Link } from "react-router-dom";
-
+import TopBar from './TopBar';
 const fadeIn = keyframes`
   from {
     opacity: 0;
@@ -77,6 +77,7 @@ const ButtonWrapper = styled('div')({
 
 const LandingPage = () => {
   return (
+    <>
     <Container>
       <Heading variant="h1">Your one and only course <AnimatedRecommender>recommender</AnimatedRecommender></Heading>
       <ContentWrapper>
@@ -95,6 +96,7 @@ const LandingPage = () => {
         </ImageWrapper>
       </ContentWrapper>
     </Container>
+    </>
   );
 };
 

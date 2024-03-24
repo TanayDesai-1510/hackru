@@ -2,15 +2,46 @@ import flask
 from flask import (
     Flask,
     jsonify,
-    request
+    request,
+    redirect
 )
 import json
 import random
 import pandas as pd
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
-FINAL = pd.read_csv("more/final_student_course_records.csv")
+#FINAL = pd.read_csv("more/final_student_course_records.csv")
+FINAL = 1
+
+@app.route('/class', methods=['POST', 'OPTIONS'])
+def handle_form_submission():
+    if request.method == 'OPTIONS':
+        # The actual server should handle preflight request automatically,
+        # but you can customize the response here if needed.
+        return _build_cors_preflight_response()
+
+    # Assuming POST request handling below
+    data = request.json
+
+    # Process the data (here we are just printing it)
+    major = data.get('major')
+    year = data.get('year')
+    gpa = data.get('gpa')
+
+    print(f"Major: {major}, Year: {year}, GPA: {gpa}")
+
+    return jsonify({"status": "success", "message": "Form data received"}), 200
+
+def _build_cors_preflight_response():
+    response = jsonify({"status": "success", "message": "CORS preflight"})
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    response.headers.add("Access-Control-Allow-Methods", "POST, OPTIONS")
+    response.headers.add("Access-Control-Allow-Headers", "Content-Type")
+    return response
+
 
 @app.route("/classtrial")
 def hello():
@@ -44,7 +75,7 @@ def hello():
             "credits": 4                     
         },
         4 : {
-            "class": "Cognitive Science: A   Multidisciplinary Introduction",
+            "class": "Cognitive Science: A Multidisciplinary Introduction",
             "id": "01:185:201",
             "dept": "Cognitive Science",
             "school": "School of Arts and Sciences",
