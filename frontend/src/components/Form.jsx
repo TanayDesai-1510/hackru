@@ -96,6 +96,7 @@ function Form() {
   const [major, setMajor] = useState('');
   const [year, setYear] = useState('');
   const [gpa, setGpa] = useState('');
+  const [interest, setInterest] = useState('');
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -103,7 +104,8 @@ function Form() {
     const formData = {
       major,
       year,
-      gpa
+      gpa,
+      interest
     };
 
     try {
@@ -169,7 +171,14 @@ function Form() {
           value={gpa}
           onChange={e => setGpa(e.target.value)}
         />
-
+        <TextField
+          fullWidth
+          margin="normal"
+          id="interest"
+          label="Interest"
+          value={interest}
+          onChange={e => setInterest(e.target.value)}
+        />
         <Button type="submit" variant="contained" style={{ marginTop: '10px', backgroundColor: '#cc0033' }} margin="normal" onClick={handleSubmit}>
           Submit
         </Button>
