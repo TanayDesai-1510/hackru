@@ -11,10 +11,11 @@ export const useMyContext = () => {
 // Create a provider component
 export const ThemeProvider = ({ children }) => {
   const [signIn, setIsSignIn] = useState(false);
+  const [netId, setNetId] = useState(null);
   
 
   return (
-    <ThemeContext.Provider value={{ signIn, setIsSignIn }}>
+    <ThemeContext.Provider value={{ signIn, setIsSignIn, netId, setNetId }}>
       {children}
     </ThemeContext.Provider>
   );

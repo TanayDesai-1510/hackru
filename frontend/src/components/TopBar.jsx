@@ -43,7 +43,7 @@ const TopBar = () => {
   const [openDrawer, setOpenDrawer] = useState(false);
   const isMobile = useMediaQuery('(max-width:600px)');
 
-  const {signIn} = useMyContext();
+  const {signIn, netId} = useMyContext();
 
   const handleDrawerOpen = () => {
     setOpenDrawer(true);
@@ -75,10 +75,10 @@ const TopBar = () => {
           )}
           {!isMobile && (
             <LinkWrapper>
-              { signIn && <><StyledLink to="/dashboard">
+              { (signIn && netId) && <><StyledLink to={"/dashboard/" + `${netId}`}>
                 <Typography variant="body1">Dashboard</Typography>
               </StyledLink>
-              <StyledLink to="/recommendation">
+              <StyledLink to={"/recommendation/" + `${netId}`}>
                 <Typography variant="body1">Recommendation</Typography>
               </StyledLink> </>}
               { !signIn && <StyledLink to="/signin">
@@ -90,15 +90,15 @@ const TopBar = () => {
       </StyledAppBar>
       <Drawer anchor="right" open={openDrawer} onClose={handleDrawerClose}>
         <List>
-          <ListItem onClick={handleDrawerClose} component={Link} to="/dashboard">
+          { (signIn && netId) && <ListItem onClick={handleDrawerClose} component={Link} to={"/dashboard/" + `${netId}`}>
             <Typography variant="body1">Dashboard</Typography>
-          </ListItem>
-          <ListItem onClick={handleDrawerClose} component={Link} to="/recommendation">
+          </ListItem> }
+          <ListItem onClick={handleDrawerClose} component={Link} to={"/recommendation/" + `${netId}`}>
             <Typography variant="body1">Recommendation</Typography>
           </ListItem>
-          <ListItem onClick={handleDrawerClose} component={Link} to="/signin">
+          { !signIn && <ListItem onClick={handleDrawerClose} component={Link} to="/signin">
             <Typography variant="body1">Sign In</Typography>
-          </ListItem>
+          </ListItem> }
           {/* Add more menu items as needed */}
         </List>
       </Drawer>

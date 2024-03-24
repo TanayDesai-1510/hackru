@@ -1,37 +1,34 @@
 import React, { useState, useEffect } from "react";
-import {
-  Card,
-  CardContent,
-  Typography,
-  ButtonBase,
-  Grid,
-} from "@mui/material";
+import { Typography, List, ListItem, ListItemText } from "@mui/material";
 import { makeStyles } from "@mui/styles";
-import ProfessorCard from "./ProfessorCard";
+import { useNavigate } from "react-router-dom";
+import { useMyContext } from "../Context";
 
 const useStyles = makeStyles({
-  card: {
-    width: 275,
-    margin: "20px",
-    transition: "transform 0.3s",
+  listItem: {
+    width: "100%",
+    padding: "10px",
+    borderBottom: "1px solid #ccc",
+    transition: "background-color 0.3s",
     "&:hover": {
-      transform: "scale(1.05)",
+      backgroundColor: "#f0f0f0", // Change to desired hover color
     },
-  },
-  cardContent: {
-    height: 200, // Adjust the height as needed
-    overflow: "auto", // Add overflow to allow scrolling if content exceeds height
   },
 });
 
-const Display = () => {
+const Display = ({ netId }) => { // Accept netId as prop
   const classes = useStyles();
-  const [classesData, setClassesData] = useState([]);
-  const [selectedClass, setSelectedClass] = useState(null);
-  const [professorData, setProfessorData] = useState(null);
+  const [classesData, setClassesData] = useState({});
+
+  const navigate = useNavigate();
+
+  const {signIn} = useMyContext();
+  if (!signIn) {
+    navigate('/');
+  }
 
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/classtrial")
+    fetch(`http://127.0.0.1:5000/dashboard/${netId}`) // Use netId in the URL
       .then((response) => {
         if (!response.ok) {
           throw new Error(`HTTP error ${response.status}`);
@@ -39,62 +36,45 @@ const Display = () => {
         return response.json();
       })
       .then((data) => {
-        setClassesData(Object.values(data));
+        setClassesData(data);
+        console.log(classesData);
       })
       .catch((error) => {
         console.error("Error fetching data:", error);
       });
-  }, []);
-
-  const handleCardClick = (classInfo) => {
-    setSelectedClass(classInfo);
-  };
-
-  const handleClose = () => {
-    setSelectedClass(null);
-  };
+  }, [netId]); // Include netId in dependency array
 
   return (
     <div>
-      <h1>Class Trial</h1>
-      <Grid container spacing={3}>
-        {classesData.map((classInfo) => (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={classInfo.id}>
-            <ButtonBase
-              component="div"
-              className={classes.card}
-              onClick={() => handleCardClick(classInfo)}
-            >
-              <Card>
-                <CardContent className={classes.cardContent}>
-                  <Typography variant="h5" component="h2">
-                    {classInfo.class}
-                  </Typography>
-                  <Typography color="textSecondary">
-                    ID: {classInfo.id}
-                  </Typography>
-                  <Typography color="textSecondary">
-                    Department: {classInfo.dept}
-                  </Typography>
-                  <Typography color="textSecondary">
-                    School: {classInfo.school}
-                  </Typography>
-                  <Typography color="textSecondary">
-                    Credits: {classInfo.credits}
-                  </Typography>
-                </CardContent>
-              </Card>
-            </ButtonBase>
-          </Grid>
-        ))}
-      </Grid>
-      {selectedClass && (
-        <ProfessorCard
-          classInfo={selectedClass}
-          onClose={handleClose}
-          professorData={professorData}
-        />
-      )}
+      <Typography variant="h3">
+        {classesData.Name} - {classesData.NetID}
+      </Typography>
+      <br />
+      <Typography variant="h4"> Major - {classesData.Major} </Typography>{" "}
+      <br />
+      <Typography variant="h4">Courses Taken</Typography>
+      <br />
+      <List>
+        {Object.entries(classesData.Courses || {}).map(
+          ([courseId, [courseName, courseGrade]]) => (
+            <ListItem key={courseId} className={classes.listItem}>
+              <ListItemText
+                primary={courseName}
+                secondary={
+                  <>
+                    <Typography variant="body2" color="textSecondary">
+                      ID: {courseId}
+                    </Typography>
+                    <Typography variant="body2" color="textSecondary">
+                      Grade: {courseGrade}
+                    </Typography>
+                  </>
+                }
+              />
+            </ListItem>
+          )
+        )}
+      </List>
     </div>
   );
 };

@@ -40,7 +40,7 @@ function App() {
         <Route path="/form" element={<Form/>} />
         <Route path="/display" element={< Display/>} />
         {/* <Route path="/sidebar" element={< Sidebar/>}/> */}
-        <Route path="/dashboard" element={< Dashboard/>}/>
+        <Route path="/dashboard/:netId" element={< Dashboard/>}/>
 
       </Routes>
     </div>

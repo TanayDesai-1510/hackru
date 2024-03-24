@@ -13,8 +13,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
 
-#FINAL = pd.read_csv("more/final_student_course_records.csv")
-FINAL = 1
+FINAL = pd.read_csv("more/final_student_course_records.csv")
 
 @app.route('/class', methods=['POST', 'OPTIONS'])
 def handle_form_submission():
@@ -135,12 +134,9 @@ def get_prof():
     reply.headers.add('Access-Control-Allow-Origin', '*')
     return reply
     
-
-@app.route("/dashboard")
-def find_all_data(netid="jm288", final=FINAL):
+@app.route("/dashboard/<string:netid>", methods = ["GET", "OPTIONS"])
+def find_all_data(netid, final=FINAL):
     if netid == "":
-        return None
-    if len(final[final['NetID'] == netid]) == 0 or len(final[final['NetID'] == netid]) == None:
         return None
     tmp_df = final[final['NetID'] == netid]
     netid = tmp_df['NetID'].values[0]
@@ -154,15 +150,20 @@ def find_all_data(netid="jm288", final=FINAL):
         course_name = row['Course Title']
         grade = row['Grade']
         courses[course_id] = [course_name, grade]
-        
-    return {
+    
+    reply = {
         "NetID": netid,
         "Name": name,
         "Major": major,
         "Year": year,
         "GPA": gpa,
         "Courses": courses
-    }
+    }    
+    print(reply)
+    reply = jsonify(reply)
+    print(reply)
+    reply.headers.add('Access-Control-Allow-Origin', '*')
+    return reply
 
 if __name__ == "__main__":
     app.run(debug=True)

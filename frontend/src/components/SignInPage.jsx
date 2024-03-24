@@ -32,7 +32,7 @@ const SignInPage = ({ onSignIn }) => {
 
   const navigate = useNavigate();
 
-  const {setIsSignIn} = useMyContext();
+  const {setIsSignIn, setNetId:setGlobalNetId} = useMyContext();
 
   const handleSubmit = async(e) => {
     e.preventDefault();
@@ -40,24 +40,26 @@ const SignInPage = ({ onSignIn }) => {
     const formData = {
       netId, password
     }
-    try {
-      const res = await fetch('http://127.0.0.1:5000/dashboard',{
-        method: 'POST',
-        headers: {
-        'Content-Type': 'application/login'
-        },
-        body: JSON.stringify(formData),
-      });
-      if (!res.ok) {
-        throw new Error('Error: $(res.status)')
-      }
-      const result = await res.json();
-      console.log('Success', result);
-    } catch (error) {
-      console.error('Error during form submission: ', error);
-    }
-    setIsSignIn(true);
-    navigate('/dashboard');
+    // try {
+    //   const res = await fetch('http://127.0.0.1:5000/dashboard',{
+    //     method: 'POST',
+    //     headers: {
+    //     'Content-Type': 'application/json'
+    //     },
+    //     body: JSON.stringify(formData),
+    //   });
+    //   if (!res.ok) {
+    //     throw new Error('Error: $(res.status)')
+    //   }
+    //   const result = await res.json();
+    //   console.log('Success', result);
+      
+    // } catch (error) {
+    //   console.error('Error during form submission: ', error);
+    // }
+      setIsSignIn(true);
+      setGlobalNetId(netId);
+      navigate("/dashboard/" + netId);
   };
 
   return (
