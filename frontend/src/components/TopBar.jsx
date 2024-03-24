@@ -73,7 +73,7 @@ const TopBar = () => {
         <List>
           <ListItem button onClick={handleDrawerClose} component={Link} to="/signin">
             <StyledSignInButton variant="contained" color="primary">
-              <Typography variant="body1" sx={{ fontSize: '1rem' }}>Sign In</Typography>
+              <Typography sx={{ fontSize: '1rem' }}>Sign In</Typography>
             </StyledSignInButton>
           </ListItem>
           {/* Add more menu items as needed */}
