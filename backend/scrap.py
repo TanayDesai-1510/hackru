@@ -41,15 +41,18 @@ def scrape_to_csv(html):
                 section_score = section.text.strip()
                 scores.append(section_score)
             
-            data.append([prof, time_taken, index, enrollment, scores])
+        professor_info = {
+            'Professor': prof,
+            'Time': time_taken,
+            'Index': index,
+            'Enrollment': enrollment,
+            'Scores': scores
+        }
+        
+        data.append(professor_info)
 
     # Convert to pandas DataFrame
-    df = pd.DataFrame(data, columns=['Professor', 'Time', 'Index', 'Enrollment', 'Section'])
-
-    # Save to CSV file
-    df.to_json()
-
-    return df
+    return data
 
 def get_prof_json_by_course(courses):
     # Initialize Selenium WebDriver
@@ -76,7 +79,7 @@ def get_prof_json_by_course(courses):
     wait.until(EC.element_to_be_clickable((By.ID, "trust-browser-button"))).click()
 
     # Select school and department
-    time.sleep(3)
+    time.sleep(8)
 
 
     professors = []
@@ -103,10 +106,10 @@ def get_prof_json_by_course(courses):
         df = scrape_to_csv(html)
         professors.append(df)
         driver.get(url)
-        
+    
     driver.quit()
     
-    return professors
+    return professors[0]
                   
 
 if __name__ == "__main__": 

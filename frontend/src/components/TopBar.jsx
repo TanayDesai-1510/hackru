@@ -78,7 +78,7 @@ const TopBar = () => {
               { (signIn && netId) && <><StyledLink to={"/dashboard/" + `${netId}`}>
                 <Typography variant="body1">Dashboard</Typography>
               </StyledLink>
-              <StyledLink to={"/recommendation/" + `${netId}`}>
+              <StyledLink to={"/reccomender/" + `${netId}`}>
                 <Typography variant="body1">Recommendation</Typography>
               </StyledLink> </>}
               { !signIn && <StyledLink to="/signin">
@@ -93,7 +93,7 @@ const TopBar = () => {
           { (signIn && netId) && <ListItem onClick={handleDrawerClose} component={Link} to={"/dashboard/" + `${netId}`}>
             <Typography variant="body1">Dashboard</Typography>
           </ListItem> }
-          <ListItem onClick={handleDrawerClose} component={Link} to={"/recommendation/" + `${netId}`}>
+          <ListItem onClick={handleDrawerClose} component={Link} to={"/reccomender/" + `${netId}`}>
             <Typography variant="body1">Recommendation</Typography>
           </ListItem>
           { !signIn && <ListItem onClick={handleDrawerClose} component={Link} to="/signin">

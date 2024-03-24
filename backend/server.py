@@ -2,46 +2,23 @@ import flask
 from flask import (
     Flask,
     jsonify,
-    request,
-    redirect
+    request
 )
 import json
 import random
 import pandas as pd
-from flask_cors import CORS
+
 from scrap import get_prof_json_by_course
+from more.hackru import (
+    generate_course_advice,
+    generate_course_advice_generic,
+    get_list_from_response
+)
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for all routes
 
-FINAL = pd.read_csv("more/final_student_course_records.csv")
-
-@app.route('/class', methods=['POST', 'OPTIONS'])
-def handle_form_submission():
-    if request.method == 'OPTIONS':
-        # The actual server should handle preflight request automatically,
-        # but you can customize the response here if needed.
-        return _build_cors_preflight_response()
-
-    # Assuming POST request handling below
-    data = request.json
-
-    # Process the data (here we are just printing it)
-    major = data.get('major')
-    year = data.get('year')
-    gpa = data.get('gpa')
-
-    print(f"Major: {major}, Year: {year}, GPA: {gpa}")
-
-    return jsonify({"status": "success", "message": "Form data received"}), 200
-
-def _build_cors_preflight_response():
-    response = jsonify({"status": "success", "message": "CORS preflight"})
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    response.headers.add("Access-Control-Allow-Methods", "POST, OPTIONS")
-    response.headers.add("Access-Control-Allow-Headers", "Content-Type")
-    return response
-
+FINAL = pd.read_csv("C:\\Users\\tanay\\OneDrive\\Desktop\\hackru\\hackru\\backend\\more\\final_student_course_records.csv")
+KEY = "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"
 
 @app.route("/classtrial")
 def hello():
@@ -75,7 +52,7 @@ def hello():
             "credits": 4                     
         },
         4 : {
-            "class": "Cognitive Science: A Multidisciplinary Introduction",
+            "class": "Cognitive Science: A   Multidisciplinary Introduction",
             "id": "01:185:201",
             "dept": "Cognitive Science",
             "school": "School of Arts and Sciences",
@@ -85,35 +62,129 @@ def hello():
     reply.headers.add('Access-Control-Allow-Origin', '*')
     return reply
     
+@app.route("/class-anon/major/<string:major>/gpa/<float:gpa>/year/<string:year>/interests/<string:interests>", methods=["OPTIONS", "GET"])
+def get_class_rec_anon(major, gpa, year, interests, key=KEY):
+    data = generate_course_advice_generic(major[:len(major) - 6], gpa, year, interests, openai_api_key=key)
+    reply_df = get_list_from_response(data.choices[0].message.content)
+    reply = {}
     
-@app.route("/classtrial/<int:id>")
-def get_class(id):
-    reply = jsonify({
-        "class": "Introduction to Computer Science",
-        "id": "01:198:111",
-        "dept": "Computer Science",
-        "school": "School of Arts and Sciences",
-        "credits": 4
-    })
-    reply.headers.add('Access-Control-Allow-Origin', '*')
-    return reply
-
-@app.route("/prof", methods= ["POST"])
-def professors():
+    if reply_df is not None:
+        for index, row in reply_df.iterrows():
+            # Updated the reply dictionary
+            reply[index] = {
+                "class": row['Course Title'],
+                "id": row['Course ID'],
+                "description": row['Course Description'],
+                "school": "School of Arts and Sciences",
+            }
+            print(row['Course Title'])
+            print(row['Course Description'])
+            print(row['Course ID'])
+        
+        reply = jsonify(reply)
+        reply.headers.add('Access-Control-Allow-Origin', '*')
+        return reply    
+    
+    else:
+        reply = jsonify({
+            "error": "No courses found."
+        })
+        reply.headers.add('Access-Control-Allow-Origin', '*')
+        return reply
+            
+    # except Exception as e:
+    #     reply = jsonify({
+    #         "error": "NetID not found.",
+    #         "exception": e
+    #     })
+    #     reply.headers.add('Access-Control-Allow-Origin', '*')
+    #     return reply
+    
+# @app.route("/class-anon/<string:id>")
+# def get_class(id, key=KEY):
+#     try:
+#         mydict = {}
+#         data = generate_course_advice_generic(mydict["major"], mydict["gpa"], mydict["year"], mydict["interests"], openai_api_key=key)
+#         reply_df = get_list_from_response(data.choices[0].message.content)
+        
+#         for index, row in reply_df.iterrows():
+#             # Updated the reply dictionary
+#             reply[index] = {
+#                 "class": row['Course Title'],
+#                 "id": row['Course ID'],
+#                 "description": row['Course Description'],
+#                 "school": "School of Arts and Sciences",
+#             }
+#             print(row['Course Title'])
+#             print(row['Course Description'])
+#             print(row['Course ID'])
+        
+#         reply = jsonify(reply)
+#         reply.headers.add('Access-Control-Allow-Origin', '*')
+#         return reply    
+        
+#     except Exception as e:
+#         reply = jsonify({
+#             "error": "NetID not found.",
+#             "exception": e
+#         })
+#         reply.headers.add('Access-Control-Allow-Origin', '*')
+#         return reply
+    
+@app.route("/prof/<string:courseid>")
+def professors(courseid):
     professors = dict()
-    course_id = request.json["course_id"]
-    data = get_prof_json_by_course([course_id])
+    data = get_prof_json_by_course([courseid])
     
-    num = 0
-    for prof in data:
-        professors[num] = prof
-        num += 1
-    reply = jsonify(professors)
+    reply = {}
+    
+    for index, row in enumerate(data):
+        reply[index] = {
+            "name": row["Professor"],
+            "rating1": row["Scores"][0],
+            "rating2": row["Scores"][1],
+        }
+    
+    reply = jsonify(reply)
+    reply.headers.add('Access-Control-Allow-Origin', '*')
     print(reply)
     return reply
     
+@app.route("/class-netid/<string:id>")
+def get_class(id, key=KEY):
+    
+    # try:
+    reply = {}
+    
+    response_from_openai = generate_course_advice(id, openai_api_key=key) # Gets AI recommendation
+    print(response_from_openai.choices[0].message.content)
+    reply_df = get_list_from_response(response_from_openai.choices[0].message.content) # Converts into PD DF
+    for index, row in reply_df.iterrows():
+        # Updated the reply dictionary
+        reply[index] = {
+            "class": row['Course Title'],
+            "id": row['Course ID'],
+            "description": row['Course Description'],
+            "school": "School of Arts and Sciences",
+        }
+        print(row['Course Title'])
+        print(row['Course Description'])
+        print(row['Course ID'])
+    
+    reply = jsonify(reply)
+    reply.headers.add('Access-Control-Allow-Origin', '*')
+    return reply
+
+    # except Exception as e:
+    #     reply = jsonify({
+    #         "error": "NetID not found.",
+    #         "exception": e
+    #     })
+    #     reply.headers.add('Access-Control-Allow-Origin', '*')
+    #     return reply
+    
 @app.route("/proftrial")
-def get_prof():
+def get_prof_trial():
     reply = jsonify({
         0 : {
             "professor": "Kostas Bekris",
@@ -149,9 +220,34 @@ def get_prof():
     reply.headers.add('Access-Control-Allow-Origin', '*')
     return reply
     
+@app.route("/prof/<string:id>")
+def get_prof():
+    reply = jsonify({
+        0 : {
+            "professor": "Kostas Bekris",
+            "dept": "Computer Science",
+            "school": "School of Arts and Sciences",
+            "ratings": [4.5, 3.9, 3,8]
+        },
+        1 : {
+            "professor": "Sesh Venugopal",
+            "dept": "Computer Science",
+            "school": "School of Arts and Sciences",
+            "rating": [4.2, 3.7]
+        },
+        2 : {
+            "professor": "Suneeta Ramaswami",
+            "dept": "Computer Science",
+            "school": "School of Arts and Sciences",
+            "rating": [4.0]
+        },
+    })
+    reply.headers.add('Access-Control-Allow-Origin', '*')
+    return reply
 
-@app.route("/dashboard")
-def find_all_data(netid="jm288", final=FINAL):
+
+@app.route("/dashboard/<string:netid>")
+def find_all_data(netid, final=FINAL):
     if netid == "":
         return None
     if len(final[final['NetID'] == netid]) == 0 or len(final[final['NetID'] == netid]) == None:
@@ -169,14 +265,16 @@ def find_all_data(netid="jm288", final=FINAL):
         grade = row['Grade']
         courses[course_id] = [course_name, grade]
         
-    return {
+    reply = jsonify({
         "NetID": netid,
         "Name": name,
         "Major": major,
         "Year": year,
         "GPA": gpa,
         "Courses": courses
-    }
+    })
+    reply.headers.add('Access-Control-Allow-Origin', '*')
+    return reply
 
 if __name__ == "__main__":
     app.run(debug=True)

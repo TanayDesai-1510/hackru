@@ -7,7 +7,9 @@ import Form from './components/Form';
 import Display from './components/Display';
 import Sidebar from './components/Sidebar'; // Import Sidebar component
 import Dashboard from './components/Dashboard';
+import Reccomender from './components/Reccomender'
 import { useMyContext } from './Context';
+import ReccomenderPage from './components/RecommenderPage';
 function App() {
   // Define a state to track authentication status
   const [authenticated, setAuthenticated] = useState(false);
@@ -41,6 +43,8 @@ function App() {
         <Route path="/display" element={< Display/>} />
         {/* <Route path="/sidebar" element={< Sidebar/>}/> */}
         <Route path="/dashboard/:netId" element={< Dashboard/>}/>
+        <Route path="/reccomender/:netId" element={<Reccomender />} />
+        <Route path="/reccomenderPage/major/:major/gpa/:gpa/year/:year/interests/:interests" element={<ReccomenderPage />} />
 
       </Routes>
     </div>

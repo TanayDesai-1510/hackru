@@ -16,17 +16,20 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useMyContext } from "../Context";
 
 
-const ReccomenderPage = () => {
+const Reccomender = () => {
   const [profData, setProfData] = useState([]);
   const navigate = useNavigate();
   const {netId} = useParams();
-  const {major, gpa, year, interests} = useParams();
 
+  const {signIn} = useMyContext();
+  if (!signIn) {
+    navigate('/');
+  }
   useEffect(() => {
     // if (!professorData) {
       (async () => {
         try {
-          const response = await fetch(`http://127.0.0.1:5000/class-anon/major/${major}/gpa/${gpa}/year/${year}/interests/${interests}`);
+          const response = await fetch(`http://127.0.0.1:5000/class-netid/${netId}`);
           if (!response.ok) {
             return;
           }
@@ -70,4 +73,4 @@ const ReccomenderPage = () => {
   );
 };
 
-export default ReccomenderPage;
+export default Reccomender;

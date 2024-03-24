@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { FormControl, InputLabel, Select, MenuItem, TextField, Button, Paper } from '@mui/material';
 import { styled } from '@mui/material/styles';
 
+import {useNavigate} from "react-router-dom";
+
 const majorOptions = [
   "Africana Studies - 013",
   "Africana Studies - 014",
@@ -96,7 +98,9 @@ function Form() {
   const [major, setMajor] = useState('');
   const [year, setYear] = useState('');
   const [gpa, setGpa] = useState('');
-  const [interest, setInterest] = useState('');
+  const [interests, setInterest] = useState('');
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -105,29 +109,13 @@ function Form() {
       major,
       year,
       gpa,
-      interest
+      interests
     };
 
-    try {
-      const response = await fetch('http://127.0.0.1:5000/class', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (!response.ok) {
-        throw new Error('Error: ${response.status}');
-      }
-
-      const result = await response.json();
-      console.log('Success:', result);
+    
+      navigate(`/reccomenderPage/major/${major}/gpa/${gpa}/year/${year}/interests/${interests}`);
       // Handle success here (e.g., redirecting to another page or displaying a success message)
-    } catch (error) {
-      console.error('Error during form submission:', error);
-      // Handle errors here (e.g., displaying an error message)
-    }
+    
   };
 
   return (
@@ -176,7 +164,7 @@ function Form() {
           margin="normal"
           id="interest"
           label="Interest"
-          value={interest}
+          value={interests}
           onChange={e => setInterest(e.target.value)}
         />
         <Button type="submit" variant="contained" style={{ marginTop: '10px', backgroundColor: '#cc0033' }} margin="normal" onClick={handleSubmit}>
