@@ -51,7 +51,7 @@ def scrape_to_csv(html):
 
     return df
 
-def get_csv_by_course(courses):
+def get_prof_json_by_course(courses):
     # Initialize Selenium WebDriver
     driver = webdriver.Edge()
 
@@ -113,6 +113,6 @@ if __name__ == "__main__":
 
     courses= ["01:198:111", "01:198:112", "01:198:205"]
 
-    profs = get_csv_by_course(courses)
+    profs = get_prof_json_by_course(courses)
     
     print(profs)

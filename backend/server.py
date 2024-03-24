@@ -9,6 +9,7 @@ import json
 import random
 import pandas as pd
 from flask_cors import CORS
+from scrap import get_prof_json_by_course
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for all routes
@@ -96,6 +97,20 @@ def get_class(id):
     })
     reply.headers.add('Access-Control-Allow-Origin', '*')
     return reply
+
+@app.route("/prof", methods= ["POST"])
+def professors():
+    professors = dict()
+    course_id = request.json["course_id"]
+    data = get_prof_json_by_course([course_id])
+    
+    num = 0
+    for prof in data:
+        professors[num] = prof
+        num += 1
+    reply = jsonify(professors)
+    print(reply)
+    return reply
     
 @app.route("/proftrial")
 def get_prof():
@@ -134,9 +149,12 @@ def get_prof():
     reply.headers.add('Access-Control-Allow-Origin', '*')
     return reply
     
-@app.route("/dashboard/<string:netid>", methods = ["GET", "OPTIONS"])
-def find_all_data(netid, final=FINAL):
+
+@app.route("/dashboard")
+def find_all_data(netid="jm288", final=FINAL):
     if netid == "":
+        return None
+    if len(final[final['NetID'] == netid]) == 0 or len(final[final['NetID'] == netid]) == None:
         return None
     tmp_df = final[final['NetID'] == netid]
     netid = tmp_df['NetID'].values[0]
@@ -150,20 +168,15 @@ def find_all_data(netid, final=FINAL):
         course_name = row['Course Title']
         grade = row['Grade']
         courses[course_id] = [course_name, grade]
-    
-    reply = {
+        
+    return {
         "NetID": netid,
         "Name": name,
         "Major": major,
         "Year": year,
         "GPA": gpa,
         "Courses": courses
-    }    
-    print(reply)
-    reply = jsonify(reply)
-    print(reply)
-    reply.headers.add('Access-Control-Allow-Origin', '*')
-    return reply
+    }
 
 if __name__ == "__main__":
     app.run(debug=True)
