@@ -4,6 +4,7 @@ import TopBar from './components/TopBar';
 import LandingPage from './components/LandingPage';
 import SignInPage from './components/SignInPage';
 import Form from './components/Form';
+import Display from './components/Display';
 
 function App() {
   // Define a state to track authentication status
@@ -23,6 +24,7 @@ function App() {
         <Route path="/signin" element={<SignInPage onSignIn={handleSignIn} />} />
         <Route path="/form" element={<Form />} />
       </Routes>
+      <Display />
     </div>
   );
 }

@@ -10,9 +10,11 @@ import pandas as pd
 
 app = Flask(__name__)
 
+FINAL = pd.read_csv("more/final_student_course_records.csv")
+
 @app.route("/classtrial")
 def hello():
-    return jsonify({
+    reply = jsonify({
         0 : {
             "class": "Introduction to Computer Science",
             "id": "01:198:111",
@@ -49,20 +51,25 @@ def hello():
             "credits": 4
         },
     })
+    reply.headers.add('Access-Control-Allow-Origin', '*')
+    return reply
+    
     
 @app.route("/classtrial/<int:id>")
 def get_class(id):
-    return jsonify({
+    reply = jsonify({
         "class": "Introduction to Computer Science",
         "id": "01:198:111",
         "dept": "Computer Science",
         "school": "School of Arts and Sciences",
         "credits": 4
     })
+    reply.headers.add('Access-Control-Allow-Origin', '*')
+    return reply
     
 @app.route("/proftrial")
 def get_prof():
-    return jsonify({
+    reply = jsonify({
         0 : {
             "professor": "Kostas Bekris",
             "dept": "Computer Science",
@@ -94,8 +101,9 @@ def get_prof():
             "rating": 4.2
         },
     })
+    reply.headers.add('Access-Control-Allow-Origin', '*')
+    return reply
     
-FINAL = pd.read_csv("backend/more/final_student_course_records.csv")
 
 @app.route("/dashboard")
 def find_all_data(netid="jm288", final=FINAL):

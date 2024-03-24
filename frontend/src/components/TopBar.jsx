@@ -1,86 +1,53 @@
-import React, { useState } from 'react';
-import { AppBar, Toolbar, Button, IconButton, Drawer, List, ListItem, Typography } from '@mui/material';
-import { styled } from '@mui/material/styles';
-import { Link } from 'react-router-dom';
-import MenuIcon from '@mui/icons-material/Menu';
+import React, { useState, useEffect } from 'react';
+import { Card, CardContent, Typography } from '@mui/material';
 
-const StyledAppBar = styled(AppBar)({
-  backgroundColor: '#ffffff', // white background color
-});
+const Display = () => {
+  const [classesData, setClassesData] = useState([]);
 
-const LogoContainer = styled('div')({
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center', // Center horizontally
-  flex: '1', // Take remaining space
-});
-
-const LogoImage = styled('img')({
-  maxWidth: 250,
-  height: 'auto',
-  cursor: 'pointer', // Add pointer cursor for indicating clickability
-});
-
-const SignInButtonContainer = styled('div')({
-  marginLeft: 'auto', // Push the button to the right
-});
-
-const StyledMenuIcon = styled(MenuIcon)({
-  color: '#000000', // black color
-});
-
-const StyledSignInButton = styled(Button)({
-  backgroundColor: '#cc0033', // custom background color
-});
-
-const TopBar = () => {
-  const [openDrawer, setOpenDrawer] = useState(false);
-
-  const handleDrawerOpen = () => {
-    setOpenDrawer(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpenDrawer(false);
-  };
+  useEffect(() => {
+    fetch('http://127.0.0.1:5000/classtrial')
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error ${response.status}`);
+        }
+        return response.json();
+      })
+      .then(data => {
+        setClassesData(Object.values(data));
+      })
+      .catch(error => {
+        console.error('Error fetching data:', error);
+      });
+  }, []);
 
   return (
-    <React.Fragment>
-      <StyledAppBar position="static">
-        <Toolbar>
-          <LogoContainer>
-            <Link to="/"> {/* Wrap the LogoImage with Link component */}
-              <LogoImage src="/assets/my-rutgers-logo-light-new.png" alt="ScarletSelector" />
-            </Link>
-          </LogoContainer>
-          <SignInButtonContainer>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              edge="end"
-              onClick={handleDrawerOpen}
-              sx={{ display: { md: 'none' } }} // Hide on medium and larger screens
-            >
-              <StyledMenuIcon />
-            </IconButton>
-            <Button component={Link} to="/signin" variant="contained" style={{ backgroundColor: '#cc0033' }} sx={{ display: { xs: 'none', md: 'block' } }}>
-              <Typography variant="body1" sx={{ fontSize: { xs: '0.8rem', md: '1rem' } }}>Sign In</Typography>
-            </Button>
-          </SignInButtonContainer>
-        </Toolbar>
-      </StyledAppBar>
-      <Drawer anchor="right" open={openDrawer} onClose={handleDrawerClose}>
-        <List>
-          <ListItem button onClick={handleDrawerClose} component={Link} to="/signin">
-            <StyledSignInButton variant="contained" color="primary">
-              <Typography sx={{ fontSize: '1rem' }}>Sign In</Typography>
-            </StyledSignInButton>
-          </ListItem>
-          {/* Add more menu items as needed */}
-        </List>
-      </Drawer>
-    </React.Fragment>
+    <div>
+      <h1>Class Trial</h1>
+      <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+        {classesData.map(classInfo => (
+          <Card key={classInfo.id} style={{ maxWidth: 345, margin: '20px', transition: 'transform 0.3s' }}>
+            <CardContent>
+              <Typography variant="h5" component="h2">
+                {classInfo.class}
+              </Typography>
+              <Typography color="textSecondary">
+                ID: {classInfo.id}
+              </Typography>
+              <Typography color="textSecondary">
+                Department: {classInfo.dept}
+              </Typography>
+              <Typography color="textSecondary">
+                School: {classInfo.school}
+              </Typography>
+              <Typography color="textSecondary">
+                Credits: {classInfo.credits}
+              </Typography>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+    </div>
   );
 };
 
-export default TopBar;
+export default Display;
