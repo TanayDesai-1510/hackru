@@ -55,7 +55,19 @@ def hello():
     return reply
     
     
-@app.route("/classtrial/<int:id>")
+@app.route("/class-anon/<string:id>")
+def get_class(id):
+    reply = jsonify({
+        "class": "Introduction to Computer Science",
+        "id": "01:198:111",
+        "dept": "Computer Science",
+        "school": "School of Arts and Sciences",
+        "credits": 4
+    })
+    reply.headers.add('Access-Control-Allow-Origin', '*')
+    return reply
+
+@app.route("/class-netid/<string:id>")
 def get_class(id):
     reply = jsonify({
         "class": "Introduction to Computer Science",
@@ -104,9 +116,34 @@ def get_prof():
     reply.headers.add('Access-Control-Allow-Origin', '*')
     return reply
     
+@app.route("/prof/<string:id>")
+def get_prof():
+    reply = jsonify({
+        0 : {
+            "professor": "Kostas Bekris",
+            "dept": "Computer Science",
+            "school": "School of Arts and Sciences",
+            "ratings": [4.5, 3.9, 3,8]
+        },
+        1 : {
+            "professor": "Sesh Venugopal",
+            "dept": "Computer Science",
+            "school": "School of Arts and Sciences",
+            "rating": [4.2, 3.7]
+        },
+        2 : {
+            "professor": "Suneeta Ramaswami",
+            "dept": "Computer Science",
+            "school": "School of Arts and Sciences",
+            "rating": [4.0]
+        },
+    })
+    reply.headers.add('Access-Control-Allow-Origin', '*')
+    return reply
 
-@app.route("/dashboard")
-def find_all_data(netid="jm288", final=FINAL):
+
+@app.route("/dashboard/<string:netid>")
+def find_all_data(netid, final=FINAL):
     if netid == "":
         return None
     if len(final[final['NetID'] == netid]) == 0 or len(final[final['NetID'] == netid]) == None:
@@ -124,14 +161,16 @@ def find_all_data(netid="jm288", final=FINAL):
         grade = row['Grade']
         courses[course_id] = [course_name, grade]
         
-    return {
+    reply = jsonify({
         "NetID": netid,
         "Name": name,
         "Major": major,
         "Year": year,
         "GPA": gpa,
         "Courses": courses
-    }
+    })
+    reply.headers.add('Access-Control-Allow-Origin', '*')
+    return reply
 
 if __name__ == "__main__":
     app.run(debug=True)
