@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 import os
 import time
 
-def scrape_to_csv(html, num):
+def scrape_to_csv(html):
     soup = BeautifulSoup(html, 'html.parser')
 
     if "No results found." in soup.get_text():
@@ -34,47 +34,24 @@ def scrape_to_csv(html, num):
         if table:
             questions = table.find_all('td', class_='qText')
             sections = table.find_all('td', class_='mono stats mQuestion section')
+            scores = []
 
             for question, section in zip(questions[-2:], sections[-2:]):
                 question_text = question.text.strip()
                 section_score = section.text.strip()
-                data.append([prof, time_taken, index, enrollment, question_text, section_score])
+                scores.append(section_score)
+            
+            data.append([prof, time_taken, index, enrollment, scores])
 
     # Convert to pandas DataFrame
-    df = pd.DataFrame(data, columns=['Professor', 'Time', 'Index', 'Enrollment', 'Question', 'Section'])
+    df = pd.DataFrame(data, columns=['Professor', 'Time', 'Index', 'Enrollment', 'Section'])
 
     # Save to CSV file
-    df.to_csv(f'course_evaluations{ num }.csv', index=False)
+    df.to_json()
 
     return df
 
 def get_csv_by_course(courses):
-    num = 1
-    for course in courses:
-        split_course = course.split(":")
-        
-        time.sleep(2)
-        school = Select(driver.find_element(By.ID, "school"))
-        school.select_by_value(split_course[0])
-
-        time.sleep(1)
-        dept = Select(driver.find_element(By.ID, "dept"))
-        dept.select_by_value(split_course[1])
-
-        # Enter course and search
-        course = driver.find_element(By.NAME, "survey[course]")
-        course.send_keys(split_course[2])
-        driver.find_element(By.XPATH, "//button[contains(text(), 'Search by subject code')]").click()
-        
-        
-        html = driver.page_source
-
-        df = scrape_to_csv(html, num)
-        num += 1
-        driver.get(url)
-                  
-
-if __name__ == "__main__": 
     # Initialize Selenium WebDriver
     driver = webdriver.Edge()
 
@@ -99,11 +76,43 @@ if __name__ == "__main__":
     wait.until(EC.element_to_be_clickable((By.ID, "trust-browser-button"))).click()
 
     # Select school and department
-    time.sleep(5)
+    time.sleep(3)
+
+
+    professors = []
+    
+    for course in courses:
+        split_course = course.split(":")
+        
+        time.sleep(2)
+        school = Select(driver.find_element(By.ID, "school"))
+        school.select_by_value(split_course[0])
+
+        time.sleep(1)
+        dept = Select(driver.find_element(By.ID, "dept"))
+        dept.select_by_value(split_course[1])
+
+        # Enter course and search
+        course = driver.find_element(By.NAME, "survey[course]")
+        course.send_keys(split_course[2])
+        driver.find_element(By.XPATH, "//button[contains(text(), 'Search by subject code')]").click()
+        
+        
+        html = driver.page_source
+
+        df = scrape_to_csv(html)
+        professors.append(df)
+        driver.get(url)
+        
+    driver.quit()
+    
+    return professors
+                  
+
+if __name__ == "__main__": 
 
     courses= ["01:198:111", "01:198:112", "01:198:205"]
 
-    get_csv_by_course(courses)
-
-    # Quit the driver
-    driver.quit()
+    profs = get_csv_by_course(courses)
+    
+    print(profs)
