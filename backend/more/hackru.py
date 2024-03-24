@@ -208,7 +208,6 @@ def get_list_from_response(stringbhai):
 # Example usage
 if __name__ == "__main__":
     netID = 'dj549'
-    openai_api_key = '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'
     result = generate_course_advice(netID, openai_api_key)
     print(result)
     print(result.choices[0].message.content)
